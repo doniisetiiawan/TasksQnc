@@ -67,6 +67,7 @@ export default class TasksList extends Component {
       id={index}
       onPress={(index) => this._completeTask(index)}
       text={item.text}
+      onLongPress={() => this._editTask()}
     />
   );
 
@@ -85,6 +86,10 @@ export default class TasksList extends Component {
     );
 
     this._updateList();
+  };
+
+  _editTask = () => {
+    this.props.navigation.push('EditTask');
   };
 
   render() {

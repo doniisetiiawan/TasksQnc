@@ -18,6 +18,7 @@ function TasksListCell(props) {
   return (
     <View key={props.id}>
       <TouchableHighlight
+        onLongPress={() => props.onLongPress()}
         onPress={() => props.onPress(props.id)}
         underlayColor="#D5DBDE"
       >
@@ -32,6 +33,7 @@ export default TasksListCell;
 TasksListCell.propTypes = {
   completed: PropTypes.bool,
   id: PropTypes.number.isRequired,
+  onLongPress: PropTypes.func.isRequired,
   onPress: PropTypes.func.isRequired,
   text: PropTypes.string,
 };
