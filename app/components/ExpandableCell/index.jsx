@@ -19,14 +19,6 @@ if (
 }
 
 class ExpandableCell extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      expanded: false,
-    };
-  }
-
   // eslint-disable-next-line camelcase
   UNSAFE_componentWillUpdate = () => {
     LayoutAnimation.configureNext(
@@ -34,18 +26,12 @@ class ExpandableCell extends Component {
     );
   };
 
-  _expandCell = () => {
-    this.setState({
-      expanded: !this.state.expanded,
-    });
-  };
-
   render() {
     return (
       <View style={styles.expandableCellContainer}>
         <View>
           <TouchableHighlight
-            onPress={() => this._expandCell()}
+            onPress={() => this.props.onPress()}
             underlayColor="#D3D3D3"
           >
             <Text style={styles.visibleContent}>
@@ -56,7 +42,7 @@ class ExpandableCell extends Component {
         <View
           style={[
             styles.hiddenContent,
-            this.state.expanded ? {} : { maxHeight: 0 },
+            this.props.expanded ? {} : { maxHeight: 0 },
           ]}
         >
           {this.props.children}
@@ -70,5 +56,7 @@ export default ExpandableCell;
 
 ExpandableCell.propTypes = {
   children: PropTypes.node.isRequired,
+  expanded: PropTypes.bool.isRequired,
+  onPress: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
 };
