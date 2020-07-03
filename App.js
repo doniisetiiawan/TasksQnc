@@ -1,21 +1,19 @@
-import { StatusBar } from 'expo-status-bar';
+/* eslint-disable react/jsx-filename-extension */
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
+import { StyleSheet, View, Platform } from 'react-native';
+import TasksList from './app/components/TasksList';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    height: Platform.OS === 'ios' ? 18 : 0,
   },
 });
+
+export default function App() {
+  return (
+    <View style={styles.container}>
+      <TasksList />
+    </View>
+  );
+}
