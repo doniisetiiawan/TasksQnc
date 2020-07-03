@@ -5,6 +5,7 @@ import {
   Text,
   View,
   TextInput,
+  AsyncStorage,
 } from 'react-native';
 import styles from './styles';
 
@@ -17,11 +18,32 @@ export default class TasksList extends Component {
     };
   }
 
-  _addTask = () => {
-    const newListOfTasks = [...this.state.listOfTasks, this.state.text];
+  componentDidMount = () => {
+    this._updateList();
+  };
+
+  _addTask = async () => {
+    const listOfTasks = [
+      ...this.state.listOfTasks,
+      this.state.text,
+    ];
+
+    await AsyncStorage.setItem(
+      'listOfTasks',
+      JSON.stringify(listOfTasks),
+    );
+
+    this._updateList();
+  };
+
+  _updateList = async () => {
+    const response = await AsyncStorage.getItem(
+      'listOfTasks',
+    );
+    const listOfTasks = (await JSON.parse(response)) || [];
 
     this.setState({
-      listOfTasks: newListOfTasks,
+      listOfTasks,
     });
 
     this._changeTextInputValue('');
@@ -33,9 +55,7 @@ export default class TasksList extends Component {
     });
   };
 
-  _renderRowData = (rowData) => (
-    <Text>{rowData}</Text>
-  );
+  _renderRowData = (rowData) => <Text>{rowData}</Text>;
 
   render() {
     const dataSource = this.state.listOfTasks;
@@ -47,14 +67,13 @@ export default class TasksList extends Component {
           onChangeText={(text) => this._changeTextInputValue(text)}
           onSubmitEditing={() => this._addTask()}
           returnKeyType="done"
-          style={styles.textInput}
           value={this.state.text}
         />
         <FlatList
           enableEmptySections
           data={dataSource}
           renderItem={({ item }) => this._renderRowData(item)}
-          keyExtractor={({ item }) => item}
+          keyExtractor={(item) => item}
         />
       </View>
     );
