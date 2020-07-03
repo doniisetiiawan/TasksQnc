@@ -1,4 +1,5 @@
 /* eslint-disable react/no-access-state-in-setstate */
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import {
   AsyncStorage,
@@ -67,7 +68,7 @@ export default class TasksList extends Component {
       id={index}
       onPress={(index) => this._completeTask(index)}
       text={item.text}
-      onLongPress={() => this._editTask()}
+      onLongPress={() => this._editTask(item)}
     />
   );
 
@@ -88,8 +89,13 @@ export default class TasksList extends Component {
     this._updateList();
   };
 
-  _editTask = () => {
-    this.props.navigation.push('EditTask');
+  _editTask = (rowData) => {
+    this.props.navigation.push('EditTask', {
+      completed: rowData.completed,
+      due: rowData.due,
+      formattedDate: rowData.formattedDate,
+      text: rowData.text,
+    });
   };
 
   render() {
@@ -115,3 +121,11 @@ export default class TasksList extends Component {
     );
   }
 }
+
+TasksList.propTypes = {
+  navigation: PropTypes.objectOf(PropTypes.func),
+};
+
+TasksList.defaultProps = {
+  navigation: {},
+};

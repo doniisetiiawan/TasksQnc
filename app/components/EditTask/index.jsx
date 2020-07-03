@@ -1,6 +1,13 @@
 /* eslint-disable react/no-access-state-in-setstate */
+import PropTypes from 'prop-types';
 import React from 'react';
-import { View, Button } from 'react-native';
+import {
+  View,
+  Button,
+  TextInput,
+  Text,
+  Switch,
+} from 'react-native';
 import DateTimePicker from 'react-native-datepicker';
 import moment from 'moment';
 import styles from './styles';
@@ -11,8 +18,10 @@ class EditTask extends React.Component {
     super(props);
 
     this.state = {
+      completed: this.props.route.params.completed,
       date: new Date(),
       expanded: false,
+      text: this.props.route.params.text,
     };
   }
 
@@ -38,12 +47,40 @@ class EditTask extends React.Component {
     });
   };
 
+  _changeTextInputValue = (text) => {
+    this.setState({
+      text,
+    });
+  };
+
+  _onSwitchToggle = (completed) => {
+    this.setState({
+      completed,
+    });
+  };
+
   render() {
     const noDueDateTitle = 'Set Reminder';
     const dueDateSetTitle = `Due On ${this.state.formattedDate}`;
 
     return (
       <View style={styles.editTaskContainer}>
+        <View>
+          <TextInput
+            autoCorrect={false}
+            onChangeText={(text) => this._changeTextInputValue(text)}
+            returnKeyType="done"
+            style={styles.textInput}
+            value={this.state.text}
+          />
+        </View>
+        <View style={styles.switchContainer}>
+          <Text style={styles.switchText}>Completed</Text>
+          <Switch
+            onValueChange={(value) => this._onSwitchToggle(value)}
+            value={this.state.completed}
+          />
+        </View>
         <View
           style={[
             styles.expandableCellContainer,
@@ -84,3 +121,7 @@ class EditTask extends React.Component {
 }
 
 export default EditTask;
+
+EditTask.propTypes = {
+  route: PropTypes.objectOf(PropTypes.object).isRequired,
+};
