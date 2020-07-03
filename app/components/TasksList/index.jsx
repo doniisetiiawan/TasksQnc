@@ -1,13 +1,13 @@
 /* eslint-disable react/no-access-state-in-setstate */
 import React, { Component } from 'react';
 import {
-  FlatList,
-  Text,
-  View,
-  TextInput,
   AsyncStorage,
+  FlatList,
+  TextInput,
+  View,
 } from 'react-native';
 import styles from './styles';
+import TasksListCell from '../TasksListCell';
 
 export default class TasksList extends Component {
   constructor(props) {
@@ -23,9 +23,14 @@ export default class TasksList extends Component {
   };
 
   _addTask = async () => {
+    const singleTask = {
+      completed: false,
+      text: this.state.text,
+    };
+
     const listOfTasks = [
       ...this.state.listOfTasks,
-      this.state.text,
+      singleTask,
     ];
 
     await AsyncStorage.setItem(
@@ -55,7 +60,31 @@ export default class TasksList extends Component {
     });
   };
 
-  _renderRowData = (rowData) => <Text>{rowData}</Text>;
+  _renderRowData = (item, index) => (
+    <TasksListCell
+      completed={item.completed}
+      id={index}
+      onPress={(index) => this._completeTask(index)}
+      text={item.text}
+    />
+  );
+
+  _completeTask = async (index) => {
+    const singleUpdatedTask = {
+      ...this.state.listOfTasks[index],
+      completed: !this.state.listOfTasks[index].completed,
+    };
+
+    const listOfTasks = this.state.listOfTasks.slice();
+    listOfTasks[index] = singleUpdatedTask;
+
+    await AsyncStorage.setItem(
+      'listOfTasks',
+      JSON.stringify(listOfTasks),
+    );
+
+    this._updateList();
+  };
 
   render() {
     const dataSource = this.state.listOfTasks;
@@ -72,8 +101,8 @@ export default class TasksList extends Component {
         <FlatList
           enableEmptySections
           data={dataSource}
-          renderItem={({ item }) => this._renderRowData(item)}
-          keyExtractor={(item) => item}
+          renderItem={({ item, index }) => this._renderRowData(item, index)}
+          keyExtractor={(item) => item.index}
         />
       </View>
     );
