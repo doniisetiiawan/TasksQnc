@@ -96,6 +96,7 @@ export default class TasksList extends Component {
           onChangeText={(text) => this._changeTextInputValue(text)}
           onSubmitEditing={() => this._addTask()}
           returnKeyType="done"
+          style={styles.textInput}
           value={this.state.text}
         />
         <FlatList
