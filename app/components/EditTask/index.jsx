@@ -19,18 +19,41 @@ class EditTask extends React.Component {
 
     this.state = {
       completed: this.props.route.params.completed,
-      date: new Date(),
+      date: new Date(this.props.route.params.due),
+      dateSelected: this.props.route.params.formattedDate,
+      formattedDate: this.props.route.params.formattedDate,
       expanded: false,
       text: this.props.route.params.text,
     };
   }
 
+  componentDidMount() {
+    this.props.navigation.setOptions({
+      title: 'Edit',
+      headerRight: () => (
+        <Button
+          onPress={
+            this.props.route.params.onRightButtonPress
+          }
+          title="Save"
+        />
+      ),
+    });
+  }
+
   _onDateChange = (date) => {
+    const formattedDate = this._formatDate(date);
+
     this.setState({
       date,
       dateSelected: true,
-      formattedDate: this._formatDate(date),
+      formattedDate,
     });
+
+    this.props.route.params.changeTaskDueDate(
+      date,
+      formattedDate,
+    );
   };
 
   _formatDate = (date) => moment(date).format('MMMM Do YYYY');
@@ -45,23 +68,32 @@ class EditTask extends React.Component {
     this.setState({
       dateSelected: false,
     });
+
+    this.props.route.params.clearTaskDueDate();
   };
 
   _changeTextInputValue = (text) => {
     this.setState({
       text,
     });
+
+    this.props.route.params.changeTaskName(text);
   };
 
   _onSwitchToggle = (completed) => {
     this.setState({
       completed,
     });
+
+    this.props.route.params.changeTaskCompletionStatus(
+      completed,
+    );
   };
 
   render() {
     const noDueDateTitle = 'Set Reminder';
-    const dueDateSetTitle = `Due On ${this.state.formattedDate}`;
+    const dueDateSetTitle = `Due On ${this.state.formattedDate}`
+      || this.props.route.params.formattedDate;
 
     return (
       <View style={styles.editTaskContainer}>
@@ -123,5 +155,6 @@ class EditTask extends React.Component {
 export default EditTask;
 
 EditTask.propTypes = {
-  route: PropTypes.objectOf(PropTypes.object).isRequired,
+  navigation: PropTypes.objectOf(PropTypes.func).isRequired,
+  route: PropTypes.objectOf(PropTypes.any).isRequired,
 };

@@ -40,7 +40,6 @@ export default function App() {
         <Stack.Screen
           name="EditTask"
           component={EditTask}
-          options={{ title: 'Edit' }}
         />
       </Stack.Navigator>
     </NavigationContainer>

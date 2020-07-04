@@ -14,6 +14,7 @@ export default class TasksList extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      currentEditedTaskObject: undefined,
       listOfTasks: [],
       text: '',
     };
@@ -27,6 +28,8 @@ export default class TasksList extends Component {
   _addTask = async () => {
     const singleTask = {
       completed: false,
+      due: new Date(),
+      formattedDate: undefined,
       text: this.state.text,
     };
 
@@ -68,18 +71,28 @@ export default class TasksList extends Component {
       id={index}
       onPress={(index) => this._completeTask(index)}
       text={item.text}
-      onLongPress={() => this._editTask(item)}
+      onLongPress={() => this._editTask(item, index)}
     />
   );
 
-  _completeTask = async (index) => {
+  _completeTask = (index) => {
     const singleUpdatedTask = {
       ...this.state.listOfTasks[index],
       completed: !this.state.listOfTasks[index].completed,
     };
 
+    this._saveAndUpdateSelectedTask(
+      singleUpdatedTask,
+      index,
+    );
+  };
+
+  _saveAndUpdateSelectedTask = async (
+    newTaskObject,
+    rowID,
+  ) => {
     const listOfTasks = this.state.listOfTasks.slice();
-    listOfTasks[index] = singleUpdatedTask;
+    listOfTasks[rowID] = newTaskObject;
 
     await AsyncStorage.setItem(
       'listOfTasks',
@@ -89,13 +102,63 @@ export default class TasksList extends Component {
     this._updateList();
   };
 
-  _editTask = (rowData) => {
-    this.props.navigation.push('EditTask', {
-      completed: rowData.completed,
-      due: rowData.due,
-      formattedDate: rowData.formattedDate,
-      text: rowData.text,
+  _editTask = (rowData, index) => {
+    this.setState({
+      currentEditedTaskObject: rowData,
     });
+
+    this.props.navigation.push('EditTask', {
+      onRightButtonPress: () => this._saveCurrentEditedTask(index),
+      changeTaskCompletionStatus: (status) => this._updateCurrentEditedTaskObject(
+        'completed',
+        status,
+      ),
+      changeTaskDueDate: (date, formattedDate) => this._updateCurrentEditedTaskDueDate(
+        date,
+        formattedDate,
+      ),
+      changeTaskName: (name) => this._updateCurrentEditedTaskObject('text', name),
+      clearTaskDueDate: () => this._updateCurrentEditedTaskDueDate(
+        undefined,
+        undefined,
+      ),
+      index,
+      completed: this.state.currentEditedTaskObject
+        .completed,
+      due: this.state.currentEditedTaskObject.due,
+      formattedDate: this.state.currentEditedTaskObject
+        .formattedDate,
+      text: this.state.currentEditedTaskObject.text,
+    });
+  };
+
+  _updateCurrentEditedTaskDueDate = (
+    date,
+    formattedDate,
+  ) => {
+    this._updateCurrentEditedTaskObject('due', date);
+    this._updateCurrentEditedTaskObject(
+      'formattedDate',
+      formattedDate,
+    );
+  };
+
+  _updateCurrentEditedTaskObject = (key, value) => {
+    const newTaskObject = {
+      ...this.state.currentEditedTaskObject,
+    };
+    newTaskObject[key] = value;
+    this.setState({
+      currentEditedTaskObject: newTaskObject,
+    });
+  };
+
+  _saveCurrentEditedTask = (rowID) => {
+    this._saveAndUpdateSelectedTask(
+      this.state.currentEditedTaskObject,
+      rowID,
+    );
+    this.props.navigation.pop();
   };
 
   render() {
