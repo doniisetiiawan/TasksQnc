@@ -5,27 +5,48 @@ import {
   TouchableHighlight,
   View,
 } from 'react-native';
+import styles from './styles';
 
-function TasksListCell(props) {
-  const isCompleted = props.completed
-    ? 'line-through'
-    : 'none';
-  const textStyle = {
-    fontSize: 20,
-    textDecorationLine: isCompleted,
+class TasksListCell extends React.Component {
+  _getDueDate = () => {
+    if (this.props.formattedDate && !this.props.completed) {
+      return `Due ${this.props.formattedDate}`;
+    }
+    return '';
   };
 
-  return (
-    <View key={props.id}>
-      <TouchableHighlight
-        onLongPress={() => props.onLongPress()}
-        onPress={() => props.onPress(props.id)}
-        underlayColor="#D5DBDE"
+  render() {
+    const isCompleted = this.props.completed
+      ? 'line-through'
+      : 'none';
+
+    return (
+      <View
+        key={this.props.id}
+        style={styles.tasksListCellContainer}
       >
-        <Text style={textStyle}>{props.text}</Text>
-      </TouchableHighlight>
-    </View>
-  );
+        <TouchableHighlight
+          onLongPress={() => this.props.onLongPress()}
+          onPress={() => this.props.onPress(this.props.id)}
+          underlayColor="#D5DBDE"
+        >
+          <View style={styles.tasksListCellTextRow}>
+            <Text
+              style={[
+                styles.taskNameText,
+                { textDecorationLine: isCompleted },
+              ]}
+            >
+              {this.props.text}
+            </Text>
+            <Text style={styles.dueDateText}>
+              {this._getDueDate()}
+            </Text>
+          </View>
+        </TouchableHighlight>
+      </View>
+    );
+  }
 }
 
 export default TasksListCell;

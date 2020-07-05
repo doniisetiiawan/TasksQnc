@@ -68,6 +68,7 @@ export default class TasksList extends Component {
   _renderRowData = (item, index) => (
     <TasksListCell
       completed={item.completed}
+      formattedDate={item.formattedDate}
       id={index}
       onPress={(index) => this._completeTask(index)}
       text={item.text}
