@@ -71,9 +71,9 @@ export default class TasksList extends Component {
       completed={item.completed}
       formattedDate={item.formattedDate}
       id={index}
-      onPress={(index) => this._completeTask(index)}
+      onPress={(index) => this.props.changeCompletionStatus(index)}
       text={item.text}
-      onLongPress={() => this._editTask(item, index)}
+      onLongPress={() => alert('placeholder')}
     />
   );
 
@@ -164,17 +164,17 @@ export default class TasksList extends Component {
   };
 
   render() {
-    const dataSource = this.state.listOfTasks;
+    const dataSource = this.props.listOfTasks;
 
     return (
       <View style={styles.container}>
         <TextInput
           autoCorrect={false}
-          onChangeText={(text) => this._changeTextInputValue(text)}
-          onSubmitEditing={() => this._addTask()}
+          onChangeText={(text) => this.props.onChangeText(text)}
+          onSubmitEditing={() => this.props.addTask(this.props.text)}
           returnKeyType="done"
           style={styles.textInput}
-          value={this.state.text}
+          value={this.props.text}
         />
         <FlatList
           enableEmptySections
@@ -188,9 +188,16 @@ export default class TasksList extends Component {
 }
 
 TasksList.propTypes = {
+  addTask: PropTypes.func.isRequired,
+  changeCompletionStatus: PropTypes.func.isRequired,
+  listOfTasks: PropTypes.objectOf(PropTypes.object),
   navigation: PropTypes.objectOf(PropTypes.func),
+  onChangeText: PropTypes.func.isRequired,
+  text: PropTypes.string,
 };
 
 TasksList.defaultProps = {
+  listOfTasks: {},
   navigation: {},
+  text: '',
 };
