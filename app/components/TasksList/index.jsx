@@ -7,6 +7,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import hash from 'object-hash';
 import styles from './styles';
 import TasksListCell from '../TasksListCell';
 
@@ -179,7 +180,7 @@ export default class TasksList extends Component {
           enableEmptySections
           data={dataSource}
           renderItem={({ item, index }) => this._renderRowData(item, index)}
-          keyExtractor={(item) => item.index}
+          keyExtractor={(item, index) => hash(index)}
         />
       </View>
     );

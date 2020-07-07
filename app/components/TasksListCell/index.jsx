@@ -5,6 +5,7 @@ import {
   TouchableHighlight,
   View,
 } from 'react-native';
+import hash from 'object-hash';
 import styles from './styles';
 
 class TasksListCell extends React.Component {
@@ -22,7 +23,7 @@ class TasksListCell extends React.Component {
 
     return (
       <View
-        key={this.props.id}
+        key={hash(this.props.id)}
         style={styles.tasksListCellContainer}
       >
         <TouchableHighlight
